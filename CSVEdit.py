@@ -2,27 +2,16 @@ import csv
 import os
 from tkinter.filedialog import askopenfilename
 #CHANGE NEXT LINE TO CONTROL WHICH FIELDS ARE PRINTED
-fieldsToPrint = [ 0, 2] #Remember to start counting from 0!
+fieldsToKeep = ["StartTime-LocalYYYYMMDD_HHMMSS", "EndTime-LocalYYYYMMDD_HHMMSS", "Situation-Value", "Location.Latitude", "Location.Longitude", "Location.Altitude", "Location.Bearing", "Location.Accuracy"]
 #End change
 
-a = []
-i=0
-b=''
-
 fileName, fileExtension = os.path.splitext(askopenfilename( filetypes=[("Sapelli CSV","*.csv")]));
+oldFile = fileName + fileExtension;
 newFile = fileName + '_new' + fileExtension;
 
-csvReader = csv.reader(open(fileName + fileExtension), delimiter=',')
-for row in csvReader:
-	a.append(row)
-outputCSV = open(newFile, 'w',newline='')
-writer = csv.writer(outputCSV)
-
-for i in range(0, len(a)):
-        rowToWrite = ""
-        for j in fieldsToPrint:
-                rowToWrite += a[i][j]
-        writer.writerow(rowToWrite)
-outputCSV.close()
-quit()
-
+with open(oldFile) as infile, open(newFile, "w", newline="") as outfile:
+    r = csv.DictReader(infile)
+    w = csv.DictWriter(outfile, fieldsToKeep, extrasaction="ignore")
+    w.writeheader()
+    for row in r:
+        w.writerow(row)
